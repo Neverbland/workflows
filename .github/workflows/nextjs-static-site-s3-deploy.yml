@@ -1,0 +1,37 @@
+# Requires the following secrets:
+  # AWS_ACCESS_KEY_ID
+  # AWS_SECRET_ACCESS_KEY
+  # AWS_REGION
+  # S3_BUCKET_NAME
+  # CLOUDFRONT_DIST_ID
+
+name: Build and Publish Storybook
+
+on:
+  # push:
+  #   branches: [ main ]
+  # Purely set up to be a manual trigger at the moment
+  workflow_dispatch:
+  
+jobs:
+  setup:
+    runs-on: ubuntu-latest  
+
+    steps:
+      - name: Check Out Repo 
+        uses: actions/checkout@v2
+      - run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with: 
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Build & Publish
+        run: |
+          BUILD_ENV="production" npm run build
+          aws s3 rm s3://${{ secrets.S3_BUCKET_NAME }} --recursive
+          aws s3 sync ./out s3://${{ secrets.S3_BUCKET_NAME }} --acl public-read
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DIST_ID }}  --paths "/*"
