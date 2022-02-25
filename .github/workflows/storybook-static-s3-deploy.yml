@@ -8,9 +8,10 @@
 name: Build and Publish Storybook
 
 on:
-   push:
-     branches: [ main ]
-   workflow_dispatch:
+  # push:
+  #   branches: [ main ]
+  # Purely set up to be a manual trigger at the moment
+  workflow_dispatch:
   
 jobs:
   setup:
