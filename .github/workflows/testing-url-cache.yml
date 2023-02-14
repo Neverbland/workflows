@@ -1,0 +1,24 @@
+name: Cache deployment URL
+
+on:
+  pull_request
+  
+jobs:
+  setup:
+    runs-on: ubuntu-latest  
+    steps:
+      - name: Check Out Repo 
+        uses: actions/checkout@v2
+      - name: Build site
+        run: |
+         echo "Building the site"
+         touch url.txt
+         echo "http://neverbland.com" > url.txt
+      - uses: actions/cache@v2
+        id: storybook-url
+        with:
+          path: url.txt
+          key: ${{ github.ref_name }}-storybook-url
+          
+          
+          
