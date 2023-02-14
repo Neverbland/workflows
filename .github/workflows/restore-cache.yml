@@ -14,5 +14,5 @@ jobs:
           key: ${{ github.ref_name }}-storybook-url
 
       - name: Do stuff
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit = 'true'
         run: cat url.txt
